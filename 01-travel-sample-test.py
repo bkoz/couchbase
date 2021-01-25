@@ -3,6 +3,7 @@
 #
 
 import argparse
+import sys
 
 # needed for any cluster connection
 from couchbase.cluster import Cluster, ClusterOptions
@@ -30,7 +31,6 @@ def get_airline_by_key(cb_coll, key):
   except Exception as e:
     print(e)
 
-
 # query for new document by callsign
 def lookup_by_callsign(cluster, cs):
   print("\nLookup Result: ")
@@ -43,22 +43,28 @@ def lookup_by_callsign(cluster, cs):
   except Exception as e:
     print(e)
 
-
 def main():
     parser = argparse.ArgumentParser()
-
-    parser.add_argument("-s", "--server", help="defaults to localhost", default="localhost")
+    parser.add_argument("-s", "--server", default="localhost")
+    parser.add_argument("-u", "--user", default="admin")
+    parser.add_argument("-p", "--password", default="password")
     args = parser.parse_args()
 
     url = "couchbase://{0}".format(args.server)
-    print("url = {0}".format(url))
 
     # get a reference to our cluster
-    cluster = Cluster(url, ClusterOptions(
-      PasswordAuthenticator('admin', 'mypassword')))
+    try:
+      cluster = Cluster(url, ClusterOptions(PasswordAuthenticator(args.user, args.password)))
+    except Exception as e:
+      print('Exception raised. Connection to the cluster failed. {0}'.format(e))
+      sys.exit()
 
     # get a reference to our bucket
-    cb = cluster.bucket('travel-sample')
+    try:
+      cb = cluster.bucket('travel-sample')
+    except Exception as e:
+      print('Exception raised. Bucket reference failed. {0}'.format(e))
+      sys.exit()
 
     # get a reference to the default collection
     cb_coll = cb.default_collection()
