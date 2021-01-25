@@ -52,18 +52,18 @@ def main():
 
     url = "couchbase://{0}".format(args.server)
 
-    # get a reference to our cluster
+    # get a reference to the cluster
     try:
       cluster = Cluster(url, ClusterOptions(PasswordAuthenticator(args.user, args.password)))
     except Exception as e:
-      print('Exception raised. Connection to the cluster failed. {0}'.format(e))
+      print('Exception raised. {0}'.format(e))
       sys.exit()
 
-    # get a reference to our bucket
+    # get a reference to the bucket
     try:
       cb = cluster.bucket('travel-sample')
     except Exception as e:
-      print('Exception raised. Bucket reference failed. {0}'.format(e))
+      print('Exception raised. {0}'.format(e))
       sys.exit()
 
     # get a reference to the default collection
